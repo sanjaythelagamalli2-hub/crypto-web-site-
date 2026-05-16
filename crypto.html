@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Trading Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#0d1117;
+    color:white;
+    overflow-x:hidden;
+}
+
+header{
+    background:#161b22;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:2px solid #00ffcc;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+header h1{
+    color:#00ffcc;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin:0 15px;
+    transition:0.3s;
+}
+
+nav a:hover{
+    color:#00ffcc;
+}
+
+.hero{
+    padding:60px 20px;
+    text-align:center;
+    background:linear-gradient(to right,#0d1117,#161b22);
+}
+
+.hero h2{
+    font-size:50px;
+    color:#00ffcc;
+    margin-bottom:20px;
+}
+
+.hero p{
+    max-width:800px;
+    margin:auto;
+    line-height:1.7;
+    font-size:18px;
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    padding:40px;
+}
+
+.card{
+    background:#161b22;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 15px rgba(0,255,204,0.2);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card h3{
+    color:#00ffcc;
+    margin-bottom:15px;
+}
+
+.price{
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+.green{
+    color:#00ff66;
+}
+
+.red{
+    color:#ff4d4d;
+}
+
+.chart-section{
+    width:90%;
+    margin:40px auto;
+    background:#161b22;
+    padding:30px;
+    border-radius:20px;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+    margin:40px 0;
+}
+
+input,select,button{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+}
+
+button{
+    background:#00ffcc;
+    color:black;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+button:hover{
+    background:white;
+}
+
+.table-section{
+    width:95%;
+    margin:40px auto;
+    overflow-x:auto;
+}
+
+.table-section table{
+    width:100%;
+    border-collapse:collapse;
+    background:#161b22;
+}
+
+.table-section th,
+.table-section td{
+    padding:15px;
+    text-align:center;
+    border-bottom:1px solid #333;
+}
+
+.table-section th{
+    background:#00ffcc;
+    color:black;
+}
+
+.crypto-symbols{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:25px;
+    padding:30px;
+}
+
+.symbol{
+    background:#161b22;
+    padding:20px;
+    border-radius:15px;
+    width:120px;
+    text-align:center;
+    font-size:35px;
+    box-shadow:0 0 10px rgba(0,255,204,0.2);
+}
+
+.trade-history{
+    width:90%;
+    margin:40px auto;
+    background:#161b22;
+    padding:30px;
+    border-radius:20px;
+}
+
+.trade-item{
+    display:flex;
+    justify-content:space-between;
+    background:#0d1117;
+    margin-top:15px;
+    padding:15px;
+    border-radius:10px;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    margin-top:50px;
+    background:#161b22;
+}
+
+@media(max-width:768px){
+    .hero h2{
+        font-size:35px;
+    }
+
+    nav{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>CryptoX Dashboard</h1>
+    <nav>
+        <a href="#market">Market</a>
+        <a href="#trade">Trade</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#history">History</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h2>Advanced Crypto Trading Dashboard</h2>
+    <p>
+        Track cryptocurrency prices, monitor your portfolio, execute simulated trades,
+        and visualize market trends with a modern crypto trading platform.
+    </p>
+</section>
+
+<section class="crypto-symbols">
+    <div class="symbol">₿</div>
+    <div class="symbol">Ξ</div>
+    <div class="symbol">₮</div>
+    <div class="symbol">◎</div>
+    <div class="symbol">Ð</div>
+</section>
+
+<section class="dashboard" id="market">
+    <div class="card">
+        <h3>Bitcoin (BTC)</h3>
+        <div class="price" id="btcPrice">$64,200</div>
+        <p class="green">+2.5%</p>
+    </div>
+
+    <div class="card">
+        <h3>Ethereum (ETH)</h3>
+        <div class="price" id="ethPrice">$3,100</div>
+        <p class="green">+1.9%</p>
+    </div>
+
+    <div class="card">
+        <h3>Solana (SOL)</h3>
+        <div class="price" id="solPrice">$145</div>
+        <p class="red">-0.8%</p>
+    </div>
+
+    <div class="card">
+        <h3>Dogecoin (DOGE)</h3>
+        <div class="price" id="dogePrice">$0.16</div>
+        <p class="green">+4.2%</p>
+    </div>
+</section>
+
+<section class="chart-section">
+    <h2 style="text-align:center;color:#00ffcc;margin-bottom:20px;">Market Chart</h2>
+    <canvas id="cryptoChart"></canvas>
+</section>
+
+<section class="controls" id="trade">
+    <select id="coinSelect">
+        <option>Bitcoin</option>
+        <option>Ethereum</option>
+        <option>Solana</option>
+        <option>Dogecoin</option>
+    </select>
+
+    <input type="number" id="tradeAmount" placeholder="Enter Amount">
+
+    <button onclick="buyCrypto()">Buy</button>
+    <button onclick="sellCrypto()">Sell</button>
+</section>
+
+<section class="table-section" id="portfolio">
+    <h2 style="text-align:center;color:#00ffcc;margin-bottom:20px;">Portfolio</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Coin</th>
+                <th>Holdings</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+
+        <tbody id="portfolioBody">
+            <tr>
+                <td>Bitcoin</td>
+                <td>0</td>
+                <td>$0</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section class="trade-history" id="history">
+    <h2 style="text-align:center;color:#00ffcc;">Trade History</h2>
+    <div id="historyContainer"></div>
+</section>
+
+<footer>
+    <p>© 2026 CryptoX Trading Dashboard | All Rights Reserved</p>
+</footer>
+
+<script>
+const ctx = document.getElementById('cryptoChart').getContext('2d');
+
+const cryptoChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+            label: 'Bitcoin Price',
+            data: [60000,62000,61000,64000,63000,65000,64200],
+            borderColor: '#00ffcc',
+            backgroundColor: 'rgba(0,255,204,0.2)',
+            tension:0.4,
+            fill:true
+        }]
+    },
+    options: {
+        responsive:true,
+        plugins:{
+            legend:{
+                labels:{
+                    color:'white'
+                }
+            }
+        },
+        scales:{
+            x:{
+                ticks:{color:'white'}
+            },
+            y:{
+                ticks:{color:'white'}
+            }
+        }
+    }
+});
+
+const portfolio = {};
+
+function updatePortfolio(){
+    const body = document.getElementById('portfolioBody');
+    body.innerHTML = '';
+
+    for(let coin in portfolio){
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${coin}</td>
+            <td>${portfolio[coin]}</td>
+            <td>$${(portfolio[coin]*1000).toFixed(2)}</td>
+        `;
+
+        body.appendChild(row);
+    }
+}
+
+function addHistory(action,coin,amount){
+    const container = document.getElementById('historyContainer');
+
+    const item = document.createElement('div');
+    item.classList.add('trade-item');
+
+    item.innerHTML = `
+        <span>${action}</span>
+        <span>${coin}</span>
+        <span>${amount}</span>
+        <span>${new Date().toLocaleTimeString()}</span>
+    `;
+
+    container.prepend(item);
+}
+
+function buyCrypto(){
+    const coin = document.getElementById('coinSelect').value;
+    const amount = parseFloat(document.getElementById('tradeAmount').value);
+
+    if(!amount || amount <= 0){
+        alert('Please enter a valid amount');
+        return;
+    }
+
+    if(!portfolio[coin]){
+        portfolio[coin] = 0;
+    }
+
+    portfolio[coin] += amount;
+
+    updatePortfolio();
+    addHistory('BUY',coin,amount);
+
+    alert('Successfully Bought ' + amount + ' ' + coin);
+
+    document.getElementById('tradeAmount').value = '';
+}
+
+function sellCrypto(){
+    const coin = document.getElementById('coinSelect').value;
+    const amount = parseFloat(document.getElementById('tradeAmount').value);
+
+    if(!amount || amount <= 0){
+        alert('Please enter a valid amount');
+        return;
+    }
+
+    if(!portfolio[coin] || portfolio[coin] < amount){
+        alert('Not enough balance');
+        return;
+    }
+
+    portfolio[coin] -= amount;
+
+    updatePortfolio();
+    addHistory('SELL',coin,amount);
+
+    alert('Successfully Sold ' + amount + ' ' + coin);
+
+    document.getElementById('tradeAmount').value = '';
+}
+
+function randomPrice(min,max){
+    return (Math.random() * (max-min) + min).toFixed(2);
+}
+
+setInterval(()=>{
+    document.getElementById('btcPrice').innerText = '$' + randomPrice(63000,66000);
+    document.getElementById('ethPrice').innerText = '$' + randomPrice(2900,3400);
+    document.getElementById('solPrice').innerText = '$' + randomPrice(130,170);
+    document.getElementById('dogePrice').innerText = '$' + randomPrice(0.10,0.25);
+},3000);
+</script>
+
+</body>
+</html>
